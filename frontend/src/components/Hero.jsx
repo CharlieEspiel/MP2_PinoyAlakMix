@@ -1,48 +1,108 @@
-import React from "react";
-import { Carousel } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Container, Row, Col } from "react-bootstrap";
+import { ArrowRightCircle } from "react-bootstrap-icons";
+import headerImg from "../assets/img/header-img2.png";
+//import "animate.css";
+import TrackVisibility from "react-on-screen";
 
 const Hero = () => {
+  const [loopNum, setLoopNum] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [text, setText] = useState("");
+  const [delta, setDelta] = useState(300 - Math.random() * 100);
+  const [index, setIndex] = useState(1);
+  const toRotate = ["Timpla ng mga Tropa!"];
+  const period = 2000;
+
+  useEffect(() => {
+    let ticker = setInterval(() => {
+      tick();
+    }, delta);
+
+    return () => {
+      clearInterval(ticker);
+    };
+  }, [text]);
+
+  const tick = () => {
+    let i = loopNum % toRotate.length;
+    let fullText = toRotate[i];
+    let updatedText = isDeleting
+      ? fullText.substring(0, text.length - 1)
+      : fullText.substring(0, text.length + 1);
+
+    setText(updatedText);
+
+    if (isDeleting) {
+      setDelta((prevDelta) => prevDelta / 2);
+    }
+
+    if (!isDeleting && updatedText === fullText) {
+      setIsDeleting(true);
+      setIndex((prevIndex) => prevIndex - 1);
+      setDelta(period);
+    } else if (isDeleting && updatedText === "") {
+      setIsDeleting(false);
+      setLoopNum(loopNum + 1);
+      setIndex(1);
+      setDelta(500);
+    } else {
+      setIndex((prevIndex) => prevIndex + 1);
+    }
+  };
+
   return (
     <>
-      <div className="container col-xxl-8 px-4 py-5">
-        <div className="row flex-lg-row-reverse align-items-center g-5 py-5">
-          <div className="col-10 col-sm-8 col-lg-6">
-            <img
-              src="https://img.freepik.com/premium-vector/summer-design-seascape-background-vector-illustration_24908-44046.jpg?w=2000"
-              className="d-block mx-lg-auto img-fluid"
-              alt="Bootstrap Themes"
-              width="700"
-              height="500"
-              loading="lazy"
-            />
-          </div>
-          <div className="col-lg-6">
-            <h1 className="display-5 fw-bold lh-1 mb-3">
-              Lorem ipsum dolor sit amet
-            </h1>
-            <p className="lead">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae
-              maxime ullam, voluptates placeat quam minima suscipit consequatur
-              ipsam optio doloremque illum vel voluptas iusto quos accusantium,
-              in, sit adipisci deserunt.
-            </p>
-            <div className="d-grid gap-2 d-md-flex justify-content-md-start">
-              <button
-                type="button"
-                className="btn btn-primary btn-lg px-4 me-md-2"
-              >
-                Primary
-              </button>
-              <button
-                type="button"
-                className="btn btn-outline-secondary btn-lg px-4"
-              >
-                Default
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <section className="banner" id="Home">
+        <Container>
+          <Row className="aligh-items-center">
+            <Col xs={12} md={6} xl={7}>
+              <TrackVisibility>
+                {({ isVisible }) => (
+                  <div
+                    className={
+                      isVisible ? "animate__animated animate__fadeIn" : ""
+                    }
+                  >
+                    <h1>
+                      <span
+                        className="txt-rotate"
+                        dataPeriod="1000"
+                        data-rotate='[ "Timpla ng mga Tropa!" ]'
+                      >
+                        <span className="wrap">{text}</span>
+                      </span>
+                    </h1>
+                    <p>
+                      Unleash your inner mixologist: create and experience the
+                      best blends with Pinoy Cocktail Mix. Let your creativity
+                      soar as you experiment with a variety of authentic
+                      Filipino ingredients and innovative techniques to craft
+                      unique and tantalizing concoctions.
+                    </p>
+                    <button onClick={() => console.log("connect")}>
+                      Let’s Connect <ArrowRightCircle size={25} />
+                    </button>
+                  </div>
+                )}
+              </TrackVisibility>
+            </Col>
+            <Col xs={12} md={6} xl={5}>
+              <TrackVisibility>
+                {({ isVisible }) => (
+                  <div
+                    className={
+                      isVisible ? "animate__animated animate__zoomIn" : ""
+                    }
+                  >
+                    <img src={headerImg} alt="Header Img" />
+                  </div>
+                )}
+              </TrackVisibility>
+            </Col>
+          </Row>
+        </Container>
+      </section>
     </>
   );
 };
